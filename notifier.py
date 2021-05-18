@@ -1,32 +1,26 @@
-# import required libraries
 import requests
-from bs4 import BeautifulSoup
-from win10toast import ToastNotifier
+import os
+from datetime import datetime
+os.environ['weather_data']=''
+user_api = os.environ['weather_data']
+location = input("Enter the city name: ")
 
-# create an object to ToastNotifier class
-n = ToastNotifier()
+complete_api_link = "https://api.openweathermap.org/data/2.5/weather?q="+location+"&appid="+user_api
+api_link = requests.get(complete_api_link)
+api_data = api_link.json()
 
+#create variables to store and display data
+temp_city = ((api_data['main']['temp']) - 273.15)
+weather_desc = api_data['weather'][0]['description']
+hmdt = api_data['main']['humidity']
+wind_spd = api_data['wind']['speed']
+date_time = datetime.now().strftime("%d %b %Y | %I:%M:%S %p")
 
-# define a function
-def getdata(url):
-    r = requests.get(url)
-    return r.text
+print ("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
+print ("Weather Stats for - {}  || {}".format(location.upper(), date_time))
+print ("^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^")
 
-
-htmldata = getdata("https://weather.com/en-IN/weather/today/l/25.59,85.14?par=google&temp=c/")
-
-soup = BeautifulSoup(htmldata, 'html.parser')
-
-current_temp = soup.find_all("span",
-                             class_="_-_-components-src-organism-CurrentConditions-CurrentConditions--tempValue--MHmYY")
-
-chances_rain = soup.find_all("div",
-                             class_="_-_-components-src-organism-CurrentConditions-CurrentConditions--precipValue--2aJSf")
-
-temp = (str(current_temp))
-
-temp_rain = str(chances_rain)
-
-result = "current_temp " + temp[128:-9] + " in patna bihar" + "\n" + temp_rain[131:-14]
-n.show_toast("live Weather update",
-             result, duration=10)
+print ("Current temperature is: {:.2f} deg C".format(temp_city))
+print ("Current weather desc  :",weather_desc)
+print ("Current Humidity      :",hmdt, '%')
+print ("Current wind speed    :",wind_spd ,'kmph')
