@@ -3,10 +3,9 @@ import json
 import requests
 import os
 from datetime import datetime
+
 user_api=os.environ['weather_data']
-
 location = input("Enter the city name: ")
-
 complete_api_link = "https://api.openweathermap.org/data/2.5/weather?q="+location+"&appid="+user_api
 api_link = requests.get(complete_api_link)
 api_data = api_link.json()
@@ -14,8 +13,6 @@ data= json.dumps(api_data)
 final_data=json.loads(data)
 
 #print(final_data)
-
-
 temp_city = ((final_data['main']['temp']) - 273.15)
 weather_desc = final_data['weather'][0]['description']
 hmdt = final_data['main']['humidity']
